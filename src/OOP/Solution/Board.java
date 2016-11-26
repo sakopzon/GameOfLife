@@ -3,8 +3,10 @@ package OOP.Solution;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -134,12 +136,39 @@ public class Board implements Iterable<Cell> {
 		rows.get(¢.y).getColumns().add(¢.x, new DeadCell(¢));
 	}
 	
-	/**
+	/** 
 	 * Create the next generation of the board.
+	 * [[SuppressWarningsSpartan]]
 	 */
 	public void moveTime() {
+		Map<Position,Integer> livingNeighbors = neighborTally();
+		for(Row row : rows)
+			for(Cell cell : row.getColumns())
+				cell.getNextGeneration(livingNeighbors.get(cell.getPosition()));
 	}
 
+	private Map<Position,Integer> neighborTally() {
+		Map<Position,Integer> $ = new HashMap<>();
+		if(rowsNum == 0 || rows.get(0).getColumnsNum() == 0)
+			return $;
+		for(Integer i = Integer.valueOf(0); i < rowsNum; ++i)
+			for(Integer j = Integer.valueOf(0); j < rows.get(0).getColumnsNum(); ++j)
+				$.put(new Position(i, j), neighborTallyAtPosition(i, j));
+		return $;
+	}
+	private Integer neighborTallyAtPosition(Integer i, Integer j) {
+		//Determine which neighboring positions are legitimate
+		Integer minimumRow = i.equals(0) ? i : i - 1;
+		Integer maximumRow = i.equals(rowsNum - 1) ? i : i + 1;
+		Integer minimumColumnn = j.equals(0) ? j : j - 1;
+		Integer maximumColumn = j.equals(rows.get(0).getColumnsNum() - 1) ? j : j + 1;
+		Integer $ = Integer.valueOf(0);
+		//Go over all legitimate neighbors, and count the living ones.
+		for(int x = minimumRow; x <= maximumRow; ++x)
+			for(int y = minimumColumnn; y <= maximumColumn; ++y)
+				$ += rows.get(x).getColumns().get(y) instanceof LiveCell ? 1 : 0;
+		return $;
+	}
 	/**
 	 * Return an iterator that will traverse the board for (left, bottom) to (top, right).
 	 * The iterator should only support hasNext() and next() operations (make remove() an empty method).
