@@ -104,11 +104,17 @@ public class Board implements Iterable<Cell> {
 	 * Bring a cell at the given position back to life.
 	 * The cell at the given location is expected to be dead, 
 	 * and that should be validated.
-	 * @param p The position of the cell to revive.
+	 * @param ¢ The position of the cell to revive.
 	 * @throws IllegalArgumentException in case the position is out of the board's bounds.
 	 * 		   ValidationException in case the cell is already alive and validations are on.
 	 */
-	public void revive(Position p) {
+	public void revive(Position ¢) throws IllegalArgumentException, ValidationException {
+		if(¢ == null || ¢.y >= rowsNum || ¢.x >= rows.get(¢.y).getColumnsNum())
+			throw new IllegalArgumentException();
+		if(rows.get(¢.y).getColumns().get(¢.x) instanceof LiveCell)
+			throw new ValidationException();
+		rows.get(¢.y).getColumns().remove(¢.x);
+		rows.get(¢.y).getColumns().add(¢.x, new LiveCell(¢));
 	}
 	
 	/**
@@ -119,7 +125,13 @@ public class Board implements Iterable<Cell> {
 	 * @throws IllegalArgumentException in case the position is out of the board's bounds.
 	 * 		   ValidationException in case the cell is already dead and validations are on.
 	 */
-	public void strike(Position p) {
+	public void strike(Position ¢) {
+		if(¢ == null || ¢.y >= rowsNum || ¢.x >= rows.get(¢.y).getColumnsNum())
+			throw new IllegalArgumentException();
+		if(rows.get(¢.y).getColumns().get(¢.x) instanceof DeadCell)
+			throw new ValidationException();
+		rows.get(¢.y).getColumns().remove(¢.x);
+		rows.get(¢.y).getColumns().add(¢.x, new DeadCell(¢));
 	}
 	
 	/**
@@ -155,7 +167,11 @@ public class Board implements Iterable<Cell> {
 	
 	public class Row {
 		List<Cell> columns = new ArrayList<>();
-		int columnsNum, rowNum;
+		private int columnsNum, rowNum;
+		
+		public int getColumnsNum() {
+			return columnsNum;
+		}
 		
 		public List<Cell> getColumns() {
 			return columns;
