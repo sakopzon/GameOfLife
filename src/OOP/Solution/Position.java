@@ -11,5 +11,19 @@ public class Position {
 		this.x = x;
 		this.y = y;
 	}
+	
+	@Override
+	public int hashCode() {
+		return 31 * (x + 31) + y;
+	}
+
+	@Override
+	public boolean equals(Object ¢) {
+		return ¢ instanceof Position && equals((Position) ¢);
+	}
+	
+	private boolean equals(Position ¢){
+		return x == ¢.x && y == ¢.y;
+	}
 
 }
