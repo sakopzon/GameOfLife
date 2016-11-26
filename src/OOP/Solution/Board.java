@@ -33,15 +33,13 @@ public class Board implements Iterable<Cell> {
 	 * 			1. A wrong symbol is used (neither dead nor alive).
 	 * 			2. The image is not a rectangle. Namely, not all rows have the same length.
 	 */
-	@SuppressWarnings("resource")
 	public Board(String image) throws IllegalArgumentException {
 		rowsNum = 0;
-		Scanner s = new Scanner(image).useDelimiter("\\" + END_OF_LINE);
-		while(s.hasNext())
-			rows.add(new Row(s.next(), rowsNum++));
+		for (Scanner ¢ = new Scanner(image).useDelimiter("\\" + END_OF_LINE); ¢.hasNext();)
+			rows.add(new Row(¢.next(), rowsNum++));
 		// Check rectangle:
-		for(Row Â¢ : rows)
-			if(rowsNum != Â¢.columnsNum)
+		for(Row ¢ : rows)
+			if(rowsNum != ¢.columnsNum)
 				throw new IllegalArgumentException();
 	}
 	
@@ -64,11 +62,13 @@ public class Board implements Iterable<Cell> {
 		int maxPos_Y = cells.stream().max((a, b) -> a.getPosition().y - b.getPosition().y).get().getPosition().y;
 		// Build DeadCells board
 		IntStream.range(0, maxPos_Y).forEach(i -> rows.add(new Row(i, maxPos_X)));
-		for(Cell Â¢ : cells) {
-			if(Â¢ instanceof DeadCell)
+		for(Cell ¢ : cells) {
+			//TODO: Alex, I'm not at all certain the Set can't contain dead cells.
+			//It says that all the cells that are not in the Set should be considered dead, not that all those that are must be alive.
+			if(¢ instanceof DeadCell)
 				throw new ValidationException();
-			int x = Â¢.getPosition().x;
-			int y = Â¢.getPosition().y;
+			int x = ¢.getPosition().x;
+			int y = ¢.getPosition().y;
 			rows.get(y).getColumns().get(x).setPosition(x, y);
 		}
 		
@@ -141,12 +141,10 @@ public class Board implements Iterable<Cell> {
 			columns.add(Cell.LIVE_SIMBOL.equals(s) ? new LiveCell(p) :  new DeadCell(p));
 		}
 		
-		@SuppressWarnings("resource")
 		Row(String s, int thisRowNum) throws IllegalArgumentException {
 			rowNum = thisRowNum; 
-			Scanner Â¢ = new Scanner(s).useDelimiter("\\" + Board.BOARD_DELIM);
-			while(Â¢.hasNext())
-				addCell(Â¢.next(), new Position(thisRowNum, columnsNum++));
+			for (Scanner ¢ = new Scanner(s).useDelimiter("\\" + Board.BOARD_DELIM); ¢.hasNext();)
+				addCell(¢.next(), new Position(thisRowNum, columnsNum++));
 		}
 		
 		// Initializes a Row of DeadCells.
