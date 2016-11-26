@@ -1,18 +1,22 @@
 package OOP.Solution;
 
-public class TopCell {
-	private Position position;
+public abstract class TopCell implements Cell{
 	
-	protected Position getPosition() {
+	protected Position position;
+	
+	@Override
+	public Position getPosition() {
 		return position;
 	}
 	
-	protected void setPosition(int x, int y) {
+	@Override
+	public void setPosition(int x, int y) {
 		position.x = x;
 		position.y = y;
 	}
 	
-	protected void setPosition(Position Â¢) {
-		position = Â¢;
+	@Override
+	public void setPosition(Position ¢) {
+		position = ¢;
 	}
 }
