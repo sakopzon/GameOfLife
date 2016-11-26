@@ -1,5 +1,7 @@
 package OOP.Solution;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +36,12 @@ public class Board implements Iterable<Cell> {
 	 * 			2. The image is not a rectangle. Namely, not all rows have the same length.
 	 */
 	public Board(String image) throws IllegalArgumentException {
+		initBoardFromString(image);
+	}
+	/**
+	 * @param image
+	 */
+	private void initBoardFromString(String image) {
 		rowsNum = 0;
 		for (Scanner ¢ = new Scanner(image).useDelimiter("\\" + END_OF_LINE); ¢.hasNext();)
 			rows.add(new Row(¢.next(), rowsNum++));
@@ -50,6 +58,24 @@ public class Board implements Iterable<Cell> {
 	 * @param reader the board supplier
 	 */
 	public Board(BoardReader reader) {
+		String image;
+		try{
+			image = reader.read();
+			initBoardFromString(image);
+		} catch(IOException e){
+			initDefaultBoard();
+		} catch (ParseException e) {
+			initDefaultBoard();
+		}
+	}
+	private void initDefaultBoard() {
+		rowsNum = 2;
+		rows.add(new Row(0,2));
+		rows.add(new Row(1,2));
+		revive(new Position(0,0));
+		revive(new Position(0,1));
+		revive(new Position(1,0));
+		revive(new Position(1,1));
 	}
 	/** 
 	 * Create a new board using a given set of cells. The list is expected to contain only live cells. This should be validated. If validations are turned off, dead cells should be ignored.
