@@ -1,7 +1,11 @@
 package OOP.Solution;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * The container of the game.
@@ -10,19 +14,35 @@ import java.util.Set;
 public class Board implements Iterable<Cell> {
 	
 	public static final String BOARD_DELIM = "|";
+	public static final String END_OF_LINE = "\n";
 
+	private List<Row> rows = new ArrayList<>();
+	private int rowsNum;
+	
+	public List<Row> getBoard() {
+		return rows;
+	}
 	/**
-	 * Create a new board based on the given image. The image is an string.
+	 * Create a new board based on the given image. The image is a string.
 	 * Each row (including the last) ends with a new line.
 	 * Each cell (including the last) is followed by BOARD_DELIM.
 	 * Each cell is represented by the string returned by its toString() method.
-	 * The first cell on the first row gets the location (0, 0). The x cell in the y row gets (x, y).
+	 * The first cell on the first row gets the location (0, 0). The x cell in the y row gets (x-1, y-1).
 	 * @param image
 	 * @throws IllegalArgumentException on the following cases:
 	 * 			1. A wrong symbol is used (neither dead nor alive).
 	 * 			2. The image is not a rectangle. Namely, not all rows have the same length.
 	 */
-	public Board(String image) {
+	@SuppressWarnings("resource")
+	public Board(String image) throws IllegalArgumentException {
+		rowsNum = 0;
+		Scanner s = new Scanner(image).useDelimiter("\\" + END_OF_LINE);
+		while(s.hasNext())
+			rows.add(new Row(s.next(), rowsNum++));
+		// Check rectangle:
+		for(Row ¢ : rows)
+			if(rowsNum != ¢.columnsNum)
+				throw new IllegalArgumentException();
 	}
 	
 	/**
@@ -33,14 +53,25 @@ public class Board implements Iterable<Cell> {
 	 */
 	public Board(BoardReader reader) {
 	}
-	/**
-	 * Create a new board using a given set of cells. The list is expected to contain
-	 * only live cells. This should be validated. If validations are turned off, dead cells
-	 * should be ignored.
+	/** 
+	 * Create a new board using a given set of cells. The list is expected to contain only live cells. This should be validated. If validations are turned off, dead cells should be ignored.
 	 * @param cells
 	 * @throws ValidationException in case a dead cell is given.
+	 * [[SuppressWarningsSpartan]]
 	 */
-	public Board(Set<Cell> cells) {
+	public Board(Set<Cell> cells) throws ValidationException{
+		int maxPos_X = cells.stream().max((a, b) -> a.getPosition().x - b.getPosition().x).get().getPosition().x;
+		int maxPos_Y = cells.stream().max((a, b) -> a.getPosition().y - b.getPosition().y).get().getPosition().y;
+		// Build DeadCells board
+		IntStream.range(0, maxPos_Y).forEach(i -> rows.add(new Row(i, maxPos_X)));
+		for(Cell ¢ : cells) {
+			if(¢ instanceof DeadCell)
+				throw new ValidationException();
+			int x = ¢.getPosition().x;
+			int y = ¢.getPosition().y;
+			rows.get(y).getColumns().get(x).setPosition(x, y);
+		}
+		
 	}
 	
 	/**
@@ -94,5 +125,34 @@ public class Board implements Iterable<Cell> {
 	@Override
 	public String toString() {
 		return null;
+	}
+	
+	public class Row {
+		List<Cell> columns = new ArrayList<>();
+		int columnsNum, rowNum;
+		
+		public List<Cell> getColumns() {
+			return columns;
+		}
+		
+		private void addCell(String s, Position p) throws IllegalArgumentException {
+			if(!Cell.LIVE_SIMBOL.equals(s) && !Cell.DEAD_SIMBOL.equals(s))
+				throw new IllegalArgumentException();
+			columns.add(Cell.LIVE_SIMBOL.equals(s) ? new LiveCell(p) :  new DeadCell(p));
+		}
+		
+		@SuppressWarnings("resource")
+		Row(String s, int thisRowNum) throws IllegalArgumentException {
+			rowNum = thisRowNum; 
+			Scanner ¢ = new Scanner(s).useDelimiter("\\" + Board.BOARD_DELIM);
+			while(¢.hasNext())
+				addCell(¢.next(), new Position(thisRowNum, columnsNum++));
+		}
+		
+		// Initializes a Row of DeadCells.
+		Row(int thisRowNum, int numOfColumns) throws IllegalArgumentException {
+			rowNum = thisRowNum;
+			IntStream.range(0, numOfColumns).forEach(c -> columns.add(new DeadCell(new Position(rowNum, c))));
+		}
 	}
 }

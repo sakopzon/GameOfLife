@@ -6,10 +6,16 @@ package OOP.Solution;
  */
 public interface Cell {
 	
+	final String DEAD_SIMBOL = " ";
+	final String LIVE_SIMBOL = "*";
+	
 	// Override to return a cell of the correct type, dead or alive,
 	// based on its current state and the number of living neighbors
 	Cell getNextGeneration(int liveNeighbors);
 	
+	Position getPosition();
+	void setPosition(int x, int y);
+	void setPosition(Position p);
 
 	//Implement this default method to get the desired behaviot for all implementing classes.
 	//Should return the distance between p1 and p2 - which is the sqrt((p1.x-p2.x)^2+(p1.y-p2.y)^2).
