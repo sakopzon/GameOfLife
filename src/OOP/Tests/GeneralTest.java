@@ -1,6 +1,8 @@
 package OOP.Tests;
 
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -114,6 +116,49 @@ public class GeneralTest {
 			}
 			assert ((output + "").equals(input + "\n")) : "\nexpected \n" + input + "\n" + "\nbut was \n" + output;
 		} catch (IllegalArgumentException e) {
+			assert false : "shouldn't thow an exception";
+		}
+	}
+	
+	@Test
+	public void boardFromSetConstructor00() {
+		String inputString = " |*|\n*| |";
+		Set<Cell> input = new HashSet<>();
+		input.add(new DeadCell(0,0));
+		input.add(new LiveCell(1,0));
+		input.add(new LiveCell(0,1));
+		input.add(new DeadCell(1,1));
+		try {
+			String output = new Board(input) + "";
+			assert false : "Set shouldn't contain DeadCells";
+		} catch (ValidationException e) {
+		}
+	}
+	
+	@Test
+	public void boardFromSetConstructor01() {
+		String inputString = " |*|\n*| |";
+		Set<Cell> input = new HashSet<>();
+		input.add(new LiveCell(1,0));
+		input.add(new LiveCell(0,1));
+		try {
+			String output = new Board(input) + "";
+			assert ((output + "").equals(inputString + "\n")) : "\nexpected \n" + inputString + "\n" + "\nbut was \n" + output;
+		} catch (ValidationException e) {
+			assert false : "shouldn't thow an exception";
+		}
+	}
+	
+	@Test
+	public void boardFromSetConstructor02() {
+		String inputString = " |*|\n*| |";
+		Set<Cell> input = new HashSet<>();
+		input.add(new LiveCell(0,-1));
+		input.add(new LiveCell(-1,0));
+		try {
+			String output = new Board(input) + "";
+			assert ((output + "").equals(inputString + "\n")) : "\nexpected \n" + inputString + "\n" + "\nbut was \n" + output;
+		} catch (ValidationException e) {
 			assert false : "shouldn't thow an exception";
 		}
 	}

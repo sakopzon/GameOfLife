@@ -23,10 +23,11 @@ public class Board implements Iterable<Cell> {
 	public static final String END_OF_LINE = "\n";
 
 	private List<Row> rows = new ArrayList<>();
-	private int rowsNum;
-	private int minRowIndex;
-	private int maxRowIndex;
-	private int minColumnIndex;
+	// TODO: check static is correct here (used in the fix enum)
+	private static int rowsNum;
+	private static int minRowIndex;
+	private static int maxRowIndex;
+	private static int minColumnIndex;
 	private int maxColumnIndex;
 	
 	public List<Row> getBoard() {
@@ -139,21 +140,13 @@ public class Board implements Iterable<Cell> {
 		putCellsOnBoard(cs);
 	}
 	
-	/**
-	 * @param ¢ the xPosition of the cell
-	 * @return Index (0 indexed) of the {@link Cell} in columns list.
-	 * Not tested yet.
-	 */
-	private int columnsIndex(Cell ¢) {
-		return ¢.xPosition() + Math.abs(minColumnIndex);
-	}
 	
 	private List<Cell> getRowListOf(Cell ¢) {
-		return rows.get(¢.yPosition()).getColumns();
+		return rows.get(fixed.rowIndex(¢)).getColumns();
 	}
 	
 	private void replaceCell(Cell ¢) {
-		getRowListOf(¢).set(columnsIndex(¢), ¢);
+		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢);
 	}
 	
 	/** 
@@ -345,6 +338,22 @@ public class Board implements Iterable<Cell> {
 		Row(int thisRowNum) throws IllegalArgumentException {
 			rowNum = thisRowNum;
 			IntStream.rangeClosed(minColumnIndex, maxColumnIndex).forEach(i -> rowList.add(new DeadCell(new Position(rowNum, i))));
+		}
+	}
+	
+	private enum fixed {
+		;
+		/**
+		 * @param ¢ the xPosition of the cell
+		 * @return Index (0 indexed) of the {@link Cell} in columns list.
+		 * Not tested yet.
+		 */
+		private static int rowListIndex(Cell ¢) {
+			return ¢.xPosition() + Math.abs(minColumnIndex);
+		}
+
+		public static int rowIndex(Cell ¢) {
+			return ¢.yPosition() + Math.abs(minRowIndex);
 		}
 	}
 }

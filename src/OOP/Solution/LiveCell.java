@@ -9,6 +9,10 @@ public class LiveCell extends TopCell implements Cell {
 	public LiveCell(Position p) {
 		setPosition(p);
 	}
+	
+	public LiveCell(int x, int y) {
+		setPosition(new Position(x, y));
+	}
 
 	@Override
 	public Cell getNextGeneration(int liveNeighbors) {

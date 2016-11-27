@@ -10,6 +10,10 @@ public class DeadCell extends TopCell implements Cell {
 		setPosition(p);
 	}
 
+	public DeadCell(int x, int y) {
+		setPosition(new Position(x, y));
+	}
+	
 	@Override
 	public Cell getNextGeneration(int liveNeighbors) {
 		return liveNeighbors == 3 ? new LiveCell(getPosition()) : new DeadCell(getPosition());
