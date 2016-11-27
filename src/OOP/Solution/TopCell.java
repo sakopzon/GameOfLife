@@ -2,8 +2,9 @@ package OOP.Solution;
 
 public abstract class TopCell implements Cell{
 	
-	protected Position position;
+	protected final Position position = new Position(0, 0);
 	
+	// Pay attention, position is final, use it's API to set values
 	@Override
 	public Position getPosition() {
 		return position;
@@ -11,12 +12,11 @@ public abstract class TopCell implements Cell{
 	
 	@Override
 	public void setPosition(int x, int y) {
-		position.x = x;
-		position.y = y;
+		position.set(x, y);
 	}
 	
 	@Override
-	public void setPosition(Position ¢) {
-		position = ¢;
+	public void setPosition(Position Â¢) {
+		position.set(Â¢);
 	}
 }

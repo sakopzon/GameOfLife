@@ -49,11 +49,11 @@ public class Board implements Iterable<Cell> {
 	 */
 	private void initBoardFromString(String image) throws IllegalArgumentException{
 		rowsNum = minColumnIndex = minRowIndex = 0;
-		for (Scanner ¢ = new Scanner(image).useDelimiter("\\" + END_OF_LINE); ¢.hasNext();)
-			rows.add(new Row(¢.next(), rowsNum++));
+		for (Scanner Â¢ = new Scanner(image).useDelimiter("\\" + END_OF_LINE); Â¢.hasNext();)
+			rows.add(new Row(Â¢.next(), rowsNum++));
 		// Check rectangle:
-		for(Row ¢ : rows)
-			if(rowsNum != ¢.getColumns().size())
+		for(Row Â¢ : rows)
+			if(rowsNum != Â¢.getColumns().size())
 				throw new IllegalArgumentException();
 		maxRowIndex = maxColumnIndex = rowsNum - 1;
 	}
@@ -100,28 +100,26 @@ public class Board implements Iterable<Cell> {
 		rowsNum = maxRowIndex - minRowIndex + 1;
 		// Build DeadCells board
 		IntStream.range(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i, minColumnIndex, maxColumnIndex)));
-		for(Cell ¢ : cells) 
-			if(¢ instanceof DeadCell)
-				revive(¢.getPosition());		
+		for(Cell Â¢ : cells) 
+			if(Â¢ instanceof DeadCell)
+				revive(Â¢.getPosition());		
 	}
 	
-	/**
-	 * Bring a cell at the given position back to life.
-	 * The cell at the given location is expected to be dead, 
-	 * and that should be validated.
-	 * @param ¢ The position of the cell to revive.
-	 * @throws IllegalArgumentException in case the position is out of the board's bounds.
-	 * 		   ValidationException in case the cell is already alive and validations are on.
+	/** 
+	 * Bring a cell at the given position back to life. The cell at the given location is expected to be dead,  and that should be validated.
+	 * @param ï¿½ The position of the cell to revive.
+	 * @throws IllegalArgumentException in case the position is out of the board's bounds.ValidationException in case the cell is already alive and validations are on.
+	 * [[SuppressWarningsSpartan]]
 	 */
-	public void revive(Position ¢) throws IllegalArgumentException, ValidationException {
-		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
+	public void revive(Position Â¢) throws IllegalArgumentException, ValidationException {
+		if(Â¢ == null || Â¢.y > maxRowIndex || Â¢.y < minRowIndex || Â¢.x > maxColumnIndex || Â¢.x < minColumnIndex)
 			throw new IllegalArgumentException();
-		for(Cell c : rows.get(¢.y).getColumns())
-			if (c.getPosition().equals(¢)) {
+		for(Cell c : rows.get(Â¢.y).getColumns())
+			if (c.getPosition().equals(Â¢)) {
 				if (c instanceof LiveCell)
 					throw new ValidationException();
-				rows.get(¢.y).getColumns().remove(c);
-				rows.get(¢.y).getColumns().add(new LiveCell(¢));
+				rows.get(Â¢.y).getColumns().remove(c);
+				rows.get(Â¢.y).getColumns().add(new LiveCell(Â¢));
 			}
 	}
 	
@@ -132,16 +130,17 @@ public class Board implements Iterable<Cell> {
 	 * @param p The position of the cell to kill.
 	 * @throws IllegalArgumentException in case the position is out of the board's bounds.
 	 * 		   ValidationException in case the cell is already dead and validations are on.
+	 * [[SuppressWarningsSpartan]]
 	 */
-	public void strike(Position ¢) {
-		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
+	public void strike(Position Â¢) {
+		if(Â¢ == null || Â¢.y > maxRowIndex || Â¢.y < minRowIndex || Â¢.x > maxColumnIndex || Â¢.x < minColumnIndex)
 			throw new IllegalArgumentException();
-		for(Cell c : rows.get(¢.y).getColumns())
-			if (c.getPosition().equals(¢)) {
+		for(Cell c : rows.get(Â¢.y).getColumns())
+			if (c.getPosition().equals(Â¢)) {
 				if (c instanceof DeadCell)
 					throw new ValidationException();
-				rows.get(¢.y).getColumns().remove(c);
-				rows.get(¢.y).getColumns().add(new DeadCell(¢));
+				rows.get(Â¢.y).getColumns().remove(c);
+				rows.get(Â¢.y).getColumns().add(new DeadCell(Â¢));
 			}
 	}
 	
@@ -161,8 +160,8 @@ public class Board implements Iterable<Cell> {
 	}
 
 	private void columnAddChecker(Map<Position, Integer> livingNeighbors, int columnIndex) {
-		for(Integer ¢ = minRowIndex; ¢ <= maxRowIndex + 1; ++¢){
-			Integer neighborNum = livingNeighbors.get(new Position(columnIndex, ¢));
+		for(Integer Â¢ = minRowIndex; Â¢ <= maxRowIndex + 1; ++Â¢){
+			Integer neighborNum = livingNeighbors.get(new Position(columnIndex, Â¢));
 			if (neighborNum != null && neighborNum.equals(3)) {
 				columnAdd(columnIndex);
 				break;
@@ -175,15 +174,15 @@ public class Board implements Iterable<Cell> {
 	 * @param columnIndex
 	 */
 	private void columnAdd(int columnIndex) {
-		for(Row ¢ : rows)
-			¢.addDeadCell(columnIndex);
+		for(Row Â¢ : rows)
+			Â¢.addDeadCell(columnIndex);
 		minColumnIndex = columnIndex < minColumnIndex ? columnIndex : minColumnIndex;
 		maxColumnIndex = columnIndex > maxColumnIndex ? columnIndex : maxColumnIndex;
 	}
 	
 	private void rowAddChecker(Map<Position, Integer> livingNeighbors, int rowIndex) {
-		for(Integer ¢ = minColumnIndex; ¢ <= maxColumnIndex + 1; ++¢){
-			Integer neighborNum = livingNeighbors.get(new Position(¢, rowIndex));
+		for(Integer Â¢ = minColumnIndex; Â¢ <= maxColumnIndex + 1; ++Â¢){
+			Integer neighborNum = livingNeighbors.get(new Position(Â¢, rowIndex));
 			if (neighborNum != null && neighborNum.equals(3)) {
 				rowAdd(rowIndex);
 				break;
@@ -238,10 +237,11 @@ public class Board implements Iterable<Cell> {
 
 	/**
 	 * Return the representation of the board as a string. The sting should be formatted as follows:
-	 * 1. Each row should end with a '\n'.
+	 * 1. Each row should end with a '\n'. TODO: The HW documentation says that '\n' is a separator!
 	 * 2. Each cell should have the appropriate symbol according to its type.
 	 * 3. Cells should be separated from each other by the board delimiter.
-	 * For example - "X| |X|\n |X| |\n" for a 3*2 board with a "v" of live cells. 
+	 * For example - "X| |X|\n |X| |\n" for a 3*2 board with a "v" of live cells.
+	 * TODO: One of the tests is already doing this!!! avoid implementing again!
 	 */
 	@Override
 	public String toString() {
@@ -269,8 +269,8 @@ public class Board implements Iterable<Cell> {
 		Row(String s, int thisRowNum) throws IllegalArgumentException {
 			rowNum = thisRowNum; 
 			Integer columnsNum = 0;
-			for (Scanner ¢ = new Scanner(s).useDelimiter("\\" + Board.BOARD_DELIM); ¢.hasNext();)
-				addCell(¢.next(), new Position(thisRowNum, columnsNum++));
+			for (Scanner Â¢ = new Scanner(s).useDelimiter("\\" + Board.BOARD_DELIM); Â¢.hasNext();)
+				addCell(Â¢.next(), new Position(thisRowNum, columnsNum++));
 		}
 		
 		// Initializes a Row of DeadCells.
