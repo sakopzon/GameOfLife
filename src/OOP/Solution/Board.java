@@ -91,7 +91,7 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void initBoardBySize() {
-		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i, minColumnIndex, maxColumnIndex)));
+		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i)));
 	}
 	
 	private void validateInput(Set<Cell> cs) throws ValidationException{
@@ -108,6 +108,23 @@ public class Board implements Iterable<Cell> {
 		rowsNum = maxRowIndex - minRowIndex + 1;
 	}
 	
+	/**
+	 * @param x
+	 * @param y
+	 * @return {@link Wrapper<Cell>} which includes the cell on the (x, y) position on board.
+	 * The ({@link Wrapper<Cell>} needed for being able to use this method as an L-value!
+	 * TODO: Not tested yet.
+	 */
+	@SuppressWarnings("unused")
+	private Wrapper<Cell> board(Position ¢) {
+		return new Wrapper<Cell>(rows.get(¢.y).rowList.get(¢.x));
+	}
+
+	private void putCellsOnBoard(Set<Cell> cs) {
+		for(Cell ¢ : cs)
+			replaceCell(¢);
+	}
+	
 	/** 
 	 * Create a new board using a given set of cells. The list is expected to contain only live cells.
 	 * This should be validated. If validations are turned off, dead cells should be ignored.
@@ -119,13 +136,32 @@ public class Board implements Iterable<Cell> {
 		validateInput(cs);
 		initBoardSize(cs);
 		initBoardBySize();
-		//TODO: Alex finish it
+		putCellsOnBoard(cs);
+	}
+	
+	/**
+	 * @param ¢ the xPosition of the cell
+	 * @return Index (0 indexed) of the {@link Cell} in columns list.
+	 * Not tested yet.
+	 */
+	private int columnsIndex(Cell ¢) {
+		return ¢.xPosition() + Math.abs(minColumnIndex);
+	}
+	
+	private List<Cell> getRowListOf(Cell ¢) {
+		return rows.get(¢.yPosition()).getColumns();
+	}
+	
+	private void replaceCell(Cell ¢) {
+		getRowListOf(¢).set(columnsIndex(¢), ¢);
 	}
 	
 	/** 
-	 * Bring a cell at the given position back to life. The cell at the given location is expected to be dead,  and that should be validated.
+	 * Bring a cell at the given position back to life. The cell at the given location is expected to be dead,
+	 * and that should be validated.
 	 * @param ¢ The position of the cell to revive.
-	 * @throws IllegalArgumentException in case the position is out of the board's bounds.ValidationException in case the cell is already alive and validations are on.
+	 * @throws IllegalArgumentException in case the position is out of the board's bounds.
+	 * ValidationException in case the cell is already alive and validations are on.
 	 * [[SuppressWarningsSpartan]]
 	 */
 	public void revive(Position ¢) throws IllegalArgumentException, ValidationException {
@@ -135,8 +171,7 @@ public class Board implements Iterable<Cell> {
 			if (c.getPosition().equals(¢)) {
 				if (c instanceof LiveCell)
 					throw new ValidationException();
-				rows.get(¢.y).getColumns().remove(c);
-				rows.get(¢.y).getColumns().add(new LiveCell(¢));
+				replaceCell(c);
 			}
 	}
 	
@@ -212,7 +247,7 @@ public class Board implements Iterable<Cell> {
 	 * @param rowIndex
 	 */
 	private void rowAdd(int rowIndex) {
-		rows.add(new Row(rowIndex, minColumnIndex, maxColumnIndex));
+		rows.add(new Row(rowIndex));
 		minRowIndex = rowIndex < minRowIndex ? rowIndex : minRowIndex;
 		maxRowIndex = rowIndex > maxRowIndex ? rowIndex : maxRowIndex;
 	}
@@ -272,21 +307,21 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	public class Row {
-		List<Cell> columns = new ArrayList<>();
+		List<Cell> rowList = new ArrayList<>();
 		private int rowNum;
 		
 		public List<Cell> getColumns() {
-			return columns;
+			return rowList;
 		}
 		
 		private void addDeadCell(int columnIndex) {
-			columns.add(new DeadCell(new Position(rowNum, columnIndex)));
+			rowList.add(new DeadCell(new Position(rowNum, columnIndex)));
 		}
 		
 		private void addCell(String s, Position p) throws IllegalArgumentException {
 			if(!Cell.LIVE_SIMBOL.equals(s) && !Cell.DEAD_SIMBOL.equals(s))
 				throw new IllegalArgumentException();
-			columns.add(Cell.LIVE_SIMBOL.equals(s) ? new LiveCell(p) :  new DeadCell(p));
+			rowList.add(Cell.LIVE_SIMBOL.equals(s) ? new LiveCell(p) :  new DeadCell(p));
 		}
 		
 		Row(String s, int thisRowNum) throws IllegalArgumentException {
@@ -296,10 +331,20 @@ public class Board implements Iterable<Cell> {
 				addCell(¢.next(), new Position(thisRowNum, columnsNum++));
 		}
 		
-		// Initializes a Row of DeadCells.
+		/*
+		 *  Initializes a Row of DeadCells. Indexes are given.
+		 */
 		Row(int thisRowNum, int minColumn, int maxColumn) throws IllegalArgumentException {
 			rowNum = thisRowNum;
-			IntStream.rangeClosed(minColumn, maxColumn).forEach(i -> columns.add(new DeadCell(new Position(rowNum, i))));
+			IntStream.rangeClosed(minColumn, maxColumn).forEach(i -> rowList.add(new DeadCell(new Position(rowNum, i))));
+		}
+		
+		/*
+		 *  Initializes a Row of DeadCells. Indexes are the Board private variables.
+		 */
+		Row(int thisRowNum) throws IllegalArgumentException {
+			rowNum = thisRowNum;
+			IntStream.rangeClosed(minColumnIndex, maxColumnIndex).forEach(i -> rowList.add(new DeadCell(new Position(rowNum, i))));
 		}
 	}
 }
