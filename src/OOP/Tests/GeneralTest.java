@@ -168,8 +168,7 @@ public class GeneralTest {
 		Position p1 = new Position(1, 2);
 		Position p2 = new Position(3, 4);
 		LiveCell c1 = new LiveCell(p1);
-		// TODO: Dan why is the (Double) cast needed?
-		assert (c1.getDistance(p1, p2).equals(Math.sqrt(8))) : "expected: " + (Double) Math.sqrt(2) + "but was: "
+		assert (c1.getDistance(p1, p2).equals(Math.sqrt(8))) : "expected: " + Math.sqrt(2) + "but was: "
 				+ c1.getDistance(p1, p2);
 	}
 
