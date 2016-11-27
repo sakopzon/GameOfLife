@@ -14,6 +14,8 @@ public interface Cell {
 	Cell getNextGeneration(int liveNeighbors);
 	
 	Position getPosition();
+	int xPosition();
+	int yPosition();
 	void setPosition(int x, int y);
 	void setPosition(Position p);
 

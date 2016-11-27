@@ -14,6 +14,9 @@ import org.junit.Test;
 
 import OOP.Solution.*;
 
+/**
+ * [[SuppressWarningsSpartan]]
+ */
 public class BoardTest {
 	static final String LIVE = new LiveCell(null).toString();
 	static final String DEAD = new DeadCell(null).toString();

@@ -11,6 +11,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import OOP.Solution.Board.Row;
+
 /**
  * The container of the game.
  * The class implements Iterable\<Cell\> so the board could be iterated.
@@ -75,6 +77,7 @@ public class Board implements Iterable<Cell> {
 			initDefaultBoard();
 		}
 	}
+	
 	private void initDefaultBoard() {
 		minRowIndex = minColumnIndex = 0;
 		maxRowIndex = maxColumnIndex = 1;
@@ -93,10 +96,10 @@ public class Board implements Iterable<Cell> {
 	 * [[SuppressWarningsSpartan]]
 	 */
 	public Board(Set<Cell> cells) throws ValidationException{
-		minColumnIndex = cells.stream().min((a, b) -> a.getPosition().x - b.getPosition().x).get().getPosition().x;
-		minRowIndex = cells.stream().min((a, b) -> a.getPosition().y - b.getPosition().y).get().getPosition().y;
-		maxColumnIndex = cells.stream().max((a, b) -> a.getPosition().x - b.getPosition().x).get().getPosition().x;
-		maxRowIndex = cells.stream().max((a, b) -> a.getPosition().y - b.getPosition().y).get().getPosition().y;
+		minColumnIndex = cells.stream().min((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
+		minRowIndex = cells.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
+		maxColumnIndex = cells.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
+		maxRowIndex = cells.stream().max((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
 		rowsNum = maxRowIndex - minRowIndex + 1;
 		// Build DeadCells board
 		IntStream.range(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i, minColumnIndex, maxColumnIndex)));
@@ -209,6 +212,7 @@ public class Board implements Iterable<Cell> {
 				$.put(new Position(i, j), neighborTallyAtPosition(i, j));
 		return $;
 	}
+	
 	private Integer neighborTallyAtPosition(Integer i, Integer j) {
 		//Determine which neighboring positions are legitimate
 		Integer minimumRow = i.equals(Integer.valueOf(minColumnIndex)) ? i : i - 1;
@@ -241,11 +245,16 @@ public class Board implements Iterable<Cell> {
 	 * 2. Each cell should have the appropriate symbol according to its type.
 	 * 3. Cells should be separated from each other by the board delimiter.
 	 * For example - "X| |X|\n |X| |\n" for a 3*2 board with a "v" of live cells.
-	 * TODO: One of the tests is already doing this!!! avoid implementing again!
 	 */
 	@Override
 	public String toString() {
-		return null;
+		StringBuilder out = new StringBuilder("");
+		for (Row r : getBoard()) {
+			for (Cell ¢ : r.getColumns())
+				out.append((¢ instanceof LiveCell ? Cell.LIVE_SIMBOL : Cell.DEAD_SIMBOL) + Board.BOARD_DELIM);
+			out.append(Board.END_OF_LINE);
+		}
+		return out + "";
 	}
 	
 	public class Row {

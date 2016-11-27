@@ -11,6 +11,16 @@ public abstract class TopCell implements Cell{
 	}
 	
 	@Override
+	public int xPosition() {
+		return position.getX();
+	}
+	
+	@Override
+	public int yPosition() {
+		return position.getY();
+	}
+	
+	@Override
 	public void setPosition(int x, int y) {
 		position.set(x, y);
 	}
