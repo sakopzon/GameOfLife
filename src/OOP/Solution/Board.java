@@ -89,28 +89,42 @@ public class Board implements Iterable<Cell> {
 		revive(new Position(1,0));
 		revive(new Position(1,1));
 	}
+	
+	private void initBoardBySize() {
+		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i, minColumnIndex, maxColumnIndex)));
+	}
+	
+	private void validateInput(Set<Cell> cs) throws ValidationException{
+		for(Cell ¢ : cs)
+			if(¢ instanceof DeadCell)
+				throw new ValidationException();
+	}
+	
+	private void initBoardSize(Set<Cell> cs) {
+		minColumnIndex = cs.stream().min((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
+		minRowIndex = cs.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
+		maxColumnIndex = cs.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
+		maxRowIndex = cs.stream().max((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
+		rowsNum = maxRowIndex - minRowIndex + 1;
+	}
+	
 	/** 
-	 * Create a new board using a given set of cells. The list is expected to contain only live cells. This should be validated. If validations are turned off, dead cells should be ignored.
+	 * Create a new board using a given set of cells. The list is expected to contain only live cells.
+	 * This should be validated. If validations are turned off, dead cells should be ignored.
 	 * @param cells
 	 * @throws ValidationException in case a dead cell is given.
 	 * [[SuppressWarningsSpartan]]
 	 */
-	public Board(Set<Cell> cells) throws ValidationException{
-		minColumnIndex = cells.stream().min((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
-		minRowIndex = cells.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
-		maxColumnIndex = cells.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
-		maxRowIndex = cells.stream().max((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
-		rowsNum = maxRowIndex - minRowIndex + 1;
-		// Build DeadCells board
-		IntStream.range(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i, minColumnIndex, maxColumnIndex)));
-		for(Cell ¢ : cells) 
-			if(¢ instanceof DeadCell)
-				revive(¢.getPosition());		
+	public Board(Set<Cell> cs) throws ValidationException{
+		validateInput(cs);
+		initBoardSize(cs);
+		initBoardBySize();
+		//TODO: Alex finish it
 	}
 	
 	/** 
 	 * Bring a cell at the given position back to life. The cell at the given location is expected to be dead,  and that should be validated.
-	 * @param � The position of the cell to revive.
+	 * @param ¢ The position of the cell to revive.
 	 * @throws IllegalArgumentException in case the position is out of the board's bounds.ValidationException in case the cell is already alive and validations are on.
 	 * [[SuppressWarningsSpartan]]
 	 */
@@ -285,7 +299,7 @@ public class Board implements Iterable<Cell> {
 		// Initializes a Row of DeadCells.
 		Row(int thisRowNum, int minColumn, int maxColumn) throws IllegalArgumentException {
 			rowNum = thisRowNum;
-			IntStream.range(minColumn, maxColumn).forEach(c -> columns.add(new DeadCell(new Position(rowNum, c))));
+			IntStream.rangeClosed(minColumn, maxColumn).forEach(i -> columns.add(new DeadCell(new Position(rowNum, i))));
 		}
 	}
 }
