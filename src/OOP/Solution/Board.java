@@ -146,7 +146,7 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void replaceCell(Cell ¢) {
-		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢);
+		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢ instanceof LiveCell ? new DeadCell(¢.getPosition()) : new LiveCell(¢.getPosition()));
 	}
 	
 	/** 
@@ -160,12 +160,13 @@ public class Board implements Iterable<Cell> {
 	public void revive(Position ¢) throws IllegalArgumentException, ValidationException {
 		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
 			throw new IllegalArgumentException();
-		for(Cell c : rows.get(¢.y).getColumns())
-			if (c.getPosition().equals(¢)) {
-				if (c instanceof LiveCell)
-					throw new ValidationException();
-				replaceCell(c);
-			}
+		for(Row row : rows)
+			row.getColumns().replaceAll(
+					(cell)->{
+						if(cell.getPosition().equals(¢) && cell instanceof LiveCell) 
+							throw new ValidationException(); 
+						return cell.getPosition().equals(¢) ? new LiveCell(¢) : cell;
+						});
 	}
 	
 	/**
@@ -180,13 +181,14 @@ public class Board implements Iterable<Cell> {
 	public void strike(Position ¢) {
 		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
 			throw new IllegalArgumentException();
-		for(Cell c : rows.get(¢.y).getColumns())
-			if (c.getPosition().equals(¢)) {
-				if (c instanceof DeadCell)
-					throw new ValidationException();
-				rows.get(¢.y).getColumns().remove(c);
-				rows.get(¢.y).getColumns().add(new DeadCell(¢));
-			}
+		for(Row row : rows)
+			row.getColumns().replaceAll(
+					(cell)->{
+						if(cell.getPosition().equals(¢) && cell instanceof DeadCell) 
+							throw new ValidationException(); 
+						return cell.getPosition().equals(¢) ? new DeadCell(¢) : cell;
+						});
+		
 	}
 	
 	/** 
@@ -257,15 +259,21 @@ public class Board implements Iterable<Cell> {
 	
 	private Integer neighborTallyAtPosition(Integer i, Integer j) {
 		//Determine which neighboring positions are legitimate
-		Integer minimumRow = i.equals(Integer.valueOf(minColumnIndex)) ? i : i - 1;
-		Integer maximumRow = i.equals(Integer.valueOf(maxColumnIndex)) ? i : i + 1;
-		Integer minimumColumnn = j.equals(Integer.valueOf(minRowIndex)) ? j : j - 1;
-		Integer maximumColumn = j.equals(Integer.valueOf(maxRowIndex)) ? j : j + 1;
+		Integer minimumRow = i > Integer.valueOf(minColumnIndex) ? i - 1 : Integer.valueOf(minColumnIndex);
+		Integer maximumRow = i < Integer.valueOf(maxColumnIndex) ? i + 1 : Integer.valueOf(maxColumnIndex);
+		Integer minimumColumn = j > Integer.valueOf(minRowIndex) ? j - 1 : Integer.valueOf(minRowIndex);
+		Integer maximumColumn = j < Integer.valueOf(maxRowIndex) ? j + 1 : Integer.valueOf(maxRowIndex);
 		Integer $ = Integer.valueOf(0);
 		//Go over all legitimate neighbors, and count the living ones.
-		for(int x = minimumRow; x <= maximumRow; ++x)
-			for(int y = minimumColumnn; y <= maximumColumn; ++y)
-				$ += rows.get(x).getColumns().get(y) instanceof LiveCell ? 1 : 0;
+		for(Row row : rows){
+			if(row.getRowNum() < minimumRow || row.getRowNum() > maximumRow)
+				continue;
+			for(Cell ¢ : row.getColumns()){
+				if(¢.getPosition().getX() < minimumColumn || ¢.getPosition().getX() > maximumColumn || (¢.getPosition().getX() == i.intValue() && row.getRowNum() == j.intValue()))
+					continue;
+				$ += ¢ instanceof LiveCell ? 1 : 0;
+			}
+		}
 		return $;
 	}
 	/**
@@ -305,6 +313,10 @@ public class Board implements Iterable<Cell> {
 		
 		public List<Cell> getColumns() {
 			return rowList;
+		}
+		
+		public int getRowNum(){
+			return rowNum;
 		}
 		
 		private void addDeadCell(int columnIndex) {

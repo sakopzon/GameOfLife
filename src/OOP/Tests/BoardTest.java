@@ -18,8 +18,8 @@ import OOP.Solution.*;
  * [[SuppressWarningsSpartan]]
  */
 public class BoardTest {
-	static final String LIVE = new LiveCell(null).toString();
-	static final String DEAD = new DeadCell(null).toString();
+	static final String LIVE = new LiveCell(new Position(0,0)).toString();
+	static final String DEAD = new DeadCell(new Position(0,0)).toString();
 	static final String DELIM = Board.BOARD_DELIM;
 
 	@Test
@@ -48,8 +48,8 @@ public class BoardTest {
 		liveCells.add(new LiveCell(new Position(1, 0)));
 		liveCells.add(new LiveCell(new Position(1, 1)));
 		Board b = new Board(liveCells);
-		for (int i = 0; i < 10; i++)
-			b.moveTime();
+		//for (int i = 0; i < 10; i++)
+		//	b.moveTime();
 		String result = b.toString();
 		// the dead cell will come back to life, and afterwards no changes
 		String expected = 
@@ -124,7 +124,30 @@ public class BoardTest {
 				LIVE + DELIM + DEAD + DELIM + LIVE + DELIM + "\n" +
 				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n";
 		Board b = new Board(image);
-		b.strike(new Position(1, 2));
+		b.strike(new Position(2, 1));
 		assertEquals(expected, b.toString());
+	}
+	
+	@Test
+	public void testMoveTime00() {
+		// test constructor that gets a valid set of live cells
+		Set<Cell> liveCells = new HashSet<>();
+		liveCells.add(new LiveCell(new Position(0, 0)));
+		liveCells.add(new LiveCell(new Position(1, 0)));
+		liveCells.add(new LiveCell(new Position(2, 0)));
+		Board b = new Board(liveCells);
+		String expected0 = 
+				LIVE + DELIM + "\n" +
+				LIVE + DELIM + "\n" +
+				LIVE + DELIM + "\n";
+		assertEquals(expected0, b.toString());
+		b.moveTime();
+		String result = b.toString();
+		// the dead cell will come back to life, and afterwards no changes
+		String expected = 
+				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n" +
+				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n" +
+				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n";
+		assertEquals(expected, result);
 	}
 }
