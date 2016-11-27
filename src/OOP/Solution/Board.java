@@ -106,7 +106,7 @@ public class Board implements Iterable<Cell> {
 		minRowIndex = cs.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
 		maxColumnIndex = cs.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
 		maxRowIndex = cs.stream().max((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
-		rowsNum = maxRowIndex - minRowIndex +  1;
+		rowsNum = maxRowIndex - minRowIndex + 1;
 	}
 	
 	/**
@@ -128,7 +128,8 @@ public class Board implements Iterable<Cell> {
 	
 	/** 
 	 * Create a new board using a given set of cells. The list is expected to contain only live cells.
-	 * This should be validated. If validations are turned off, dead cells should be ignored.
+	 * This should be validated. 
+	 * TODO: understand: If validations are turned off, dead cells should be ignored.
 	 * @param cells
 	 * @throws ValidationException in case a dead cell is given.
 	 * [[SuppressWarningsSpartan]]
