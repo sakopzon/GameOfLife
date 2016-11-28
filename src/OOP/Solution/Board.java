@@ -11,8 +11,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import OOP.Solution.Board.Row;
-
 /**
  * The container of the game.
  * The class implements Iterable\<Cell\> so the board could be iterated.
