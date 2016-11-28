@@ -21,7 +21,6 @@ public class Board implements Iterable<Cell> {
 	public static final String END_OF_LINE = "\n";
 
 	private List<Row> rows = new ArrayList<>();
-	// TODO: check static is correct here (used in the fix enum)
 	private static int rowsNum;
 	private static int minColumnIndex;
 	private static int maxColumnIndex;
@@ -148,6 +147,7 @@ public class Board implements Iterable<Cell> {
 		return rows.get(fixed.rowIndex(¢)).getRowList();
 	}
 	
+	// TODO: Maybe should be renamed to putCell()?
 	private void replaceCell(Cell ¢) {
 		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢);
 	}
@@ -279,6 +279,11 @@ public class Board implements Iterable<Cell> {
 		}
 		return $;
 	}
+	
+	private Cell getCell(Position ¢) {
+		return rows.get(fixed.rowIndex(¢)).rowList.get(fixed.rowListIndex(¢));
+	}
+	
 	/**
 	 * Return an iterator that will traverse the board for (left, bottom) to (top, right).
 	 * The iterator should only support hasNext() and next() operations (make remove() an empty method).
@@ -289,7 +294,32 @@ public class Board implements Iterable<Cell> {
 	 */
 	@Override
 	public Iterator<Cell> iterator() {
-		return null;
+		return new Iterator<Cell>() {
+			
+			// TODO: the first Cell is (0, 0)? or this:
+			Position current = new Position(minRowIndex, minColumnIndex);
+			
+			@Override
+			public boolean hasNext() {
+				return !getCell(current).getPosition().equals(new Position(maxRowIndex, maxColumnIndex));
+			}
+
+			@Override
+			public Cell next() {
+				if(current.y < maxColumnIndex)
+					current.setY(current.y + 1);
+				else {
+					current.setX(current.x + 1);
+					current.setY(minColumnIndex);
+				}
+				return getCell(current);
+			}
+			
+			@Override
+			public void remove() {
+			}
+
+		};
 	}
 
 	/**
@@ -371,5 +401,14 @@ public class Board implements Iterable<Cell> {
 		public static int rowIndex(Cell ¢) {
 			return ¢.xPosition() + Math.abs(minColumnIndex);
 		}
+		
+		private static int rowListIndex(Position ¢) {
+			return ¢.y + Math.abs(minRowIndex);
+		}
+
+		public static int rowIndex(Position ¢) {
+			return ¢.x + Math.abs(minColumnIndex);
+		}
+
 	}
 }
