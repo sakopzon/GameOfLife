@@ -297,22 +297,23 @@ public class Board implements Iterable<Cell> {
 		return new Iterator<Cell>() {
 			
 			// TODO: the first Cell is (0, 0)? or this:
-			Position current = new Position(maxRowIndex, minColumnIndex);
+			Position curr = new Position(maxRowIndex, minColumnIndex);
 			
 			@Override
 			public boolean hasNext() {
-				return !getCell(current).getPosition().equals(new Position(minRowIndex, maxColumnIndex));
+				return curr.x >= minRowIndex;
 			}
 
 			@Override
 			public Cell next() {
-				if(current.y < maxColumnIndex)
-					current.setY(current.y + 1);
+				Position prev = new Position(curr);
+				if(prev.y < maxColumnIndex)
+					curr.setY(prev.y + 1);
 				else {
-					current.setX(current.x - 1);
-					current.setY(minColumnIndex);
+					curr.setX(prev.x - 1);
+					curr.setY(minColumnIndex);
 				}
-				return getCell(current);
+				return getCell(prev);
 			}
 			
 			@Override

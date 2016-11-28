@@ -38,6 +38,11 @@ public class Position {
 		this.y = y;
 	}
 	
+	public Position(Position ¢) {
+		x = ¢.x;
+		y = ¢.y;
+	}
+
 	@Override
 	public int hashCode() {
 		return 31 * (x + 31) + y;

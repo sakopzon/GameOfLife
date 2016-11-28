@@ -381,7 +381,7 @@ public class BoardTest {
 	}
 
 	@Test
-	public void testIterator() {
+	public void testIterator00() {
 		// test valid iteration
 		String image = 
 				LIVE + DELIM + DEAD + DELIM + "\n" +
@@ -392,6 +392,34 @@ public class BoardTest {
 		assertEquals(new DeadCell(new Position(1, 0)), i.next());
 		assertEquals(new DeadCell(new Position(0, 1)), i.next());
 		assertEquals(new LiveCell(new Position(1, 1)), i.next());
+		assertFalse(i.hasNext());
+	}
+	
+	@Test
+	public void testIterator01() {
+		String image = 
+				LIVE + DELIM + DEAD + DELIM + "\n" +
+				DEAD + DELIM + LIVE + DELIM + "\n";
+		Board b = new Board(image);
+		Iterator<Cell> i = b.iterator();
+		assertEquals(1, i.next().xPosition());
+		assertEquals(1, i.next().xPosition());
+		assertEquals(0, i.next().xPosition());
+		assertEquals(0, i.next().xPosition());
+		assertFalse(i.hasNext());
+	}
+	
+	@Test
+	public void testIterator02() {
+		String image = 
+				LIVE + DELIM + DEAD + DELIM + "\n" +
+				DEAD + DELIM + LIVE + DELIM + "\n";
+		Board b = new Board(image);
+		Iterator<Cell> i = b.iterator();
+		assertEquals(0, i.next().yPosition());
+		assertEquals(1, i.next().yPosition());
+		assertEquals(0, i.next().yPosition());
+		assertEquals(1, i.next().yPosition());
 		assertFalse(i.hasNext());
 	}
 
