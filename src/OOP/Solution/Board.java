@@ -11,8 +11,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import OOP.Solution.Board.Row;
-
 /**
  * The container of the game.
  * The class implements Iterable\<Cell\> so the board could be iterated.
@@ -25,10 +23,10 @@ public class Board implements Iterable<Cell> {
 	private List<Row> rows = new ArrayList<>();
 	// TODO: check static is correct here (used in the fix enum)
 	private static int rowsNum;
-	private static int minRowIndex;
-	private static int maxRowIndex;
 	private static int minColumnIndex;
-	private int maxColumnIndex;
+	private static int maxColumnIndex;
+	private static int minRowIndex;
+	private int maxRowIndex;
 	
 	public List<Row> getBoard() {
 		return rows;
@@ -51,14 +49,14 @@ public class Board implements Iterable<Cell> {
 	 * @param image
 	 */
 	private void initBoardFromString(String image) throws IllegalArgumentException{
-		rowsNum = minColumnIndex = minRowIndex = 0;
+		rowsNum = minRowIndex = minColumnIndex = 0;
 		for (Scanner ¢ = new Scanner(image).useDelimiter("\\" + END_OF_LINE); ¢.hasNext();)
 			rows.add(new Row(¢.next(), rowsNum++));
 		// Check rectangle:
 		for(Row ¢ : rows)
 			if(rowsNum != ¢.getRowList().size())
 				throw new IllegalArgumentException();
-		maxRowIndex = maxColumnIndex = rowsNum - 1;
+		maxColumnIndex = maxRowIndex = rowsNum - 1;
 	}
 	
 	/**
@@ -80,8 +78,8 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void initDefaultBoard() {
-		minRowIndex = minColumnIndex = 0;
-		maxRowIndex = maxColumnIndex = 1;
+		minColumnIndex = minRowIndex = 0;
+		maxColumnIndex = maxRowIndex = 1;
 		rowsNum = 2;
 		rows.add(new Row(0,0,1));
 		rows.add(new Row(1,0,1));
@@ -92,7 +90,7 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void initBoardBySize() {
-		IntStream.rangeClosed(minColumnIndex, maxColumnIndex).forEach(i -> rows.add(new Row(i,minRowIndex,maxRowIndex)));
+		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i,minColumnIndex,maxColumnIndex)));
 	}
 	
 //	private void initBoardBySize() {
@@ -106,11 +104,11 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void initBoardSize(Set<Cell> cs) {
-		minColumnIndex = cs.stream().min((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
-		minRowIndex = cs.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
-		maxColumnIndex = cs.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
-		maxRowIndex = cs.stream().max((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
-		rowsNum = maxRowIndex - minRowIndex + 1;
+		minRowIndex = cs.stream().min((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
+		minColumnIndex = cs.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
+		maxRowIndex = cs.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
+		maxColumnIndex = cs.stream().max((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
+		rowsNum = maxColumnIndex - minColumnIndex + 1;
 	}
 	
 	/**
@@ -163,7 +161,7 @@ public class Board implements Iterable<Cell> {
 	 * [[SuppressWarningsSpartan]]
 	 */
 	public void revive(Position ¢) throws IllegalArgumentException, ValidationException {
-		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
+		if(¢ == null || ¢.y > maxColumnIndex || ¢.y < minColumnIndex || ¢.x > maxRowIndex || ¢.x < minRowIndex)
 			throw new IllegalArgumentException();
 		for(Row row : rows)
 			row.getRowList().replaceAll(
@@ -184,7 +182,7 @@ public class Board implements Iterable<Cell> {
 	 * [[SuppressWarningsSpartan]]
 	 */
 	public void strike(Position ¢) {
-		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
+		if(¢ == null || ¢.y > maxColumnIndex || ¢.y < minColumnIndex || ¢.x > maxRowIndex || ¢.x < minRowIndex)
 			throw new IllegalArgumentException();
 		for(Row row : rows)
 			row.getRowList().replaceAll(
@@ -202,17 +200,17 @@ public class Board implements Iterable<Cell> {
 	 */
 	public void moveTime() {
 		Map<Position,Integer> livingNeighbors = neighborTally();
-		rowAddChecker(livingNeighbors, minRowIndex - 1);
-		rowAddChecker(livingNeighbors, maxRowIndex + 1);
-		columnAddChecker(livingNeighbors, minColumnIndex - 1);
-		columnAddChecker(livingNeighbors, maxColumnIndex + 1);
+		rowAddChecker(livingNeighbors, minColumnIndex - 1);
+		rowAddChecker(livingNeighbors, maxColumnIndex + 1);
+		columnAddChecker(livingNeighbors, minRowIndex - 1);
+		columnAddChecker(livingNeighbors, maxRowIndex + 1);
 		for(Row row : rows)
 			for(Cell cell : row.getRowList())
 				cell.getNextGeneration(livingNeighbors.get(cell.getPosition()));
 	}
 
 	private void columnAddChecker(Map<Position, Integer> livingNeighbors, int columnIndex) {
-		for(Integer ¢ = minRowIndex; ¢ <= maxRowIndex + 1; ++¢){
+		for(Integer ¢ = minColumnIndex; ¢ <= maxColumnIndex + 1; ++¢){
 			Integer neighborNum = livingNeighbors.get(new Position(columnIndex, ¢));
 			if (neighborNum != null && neighborNum.equals(3)) {
 				columnAdd(columnIndex);
@@ -228,12 +226,12 @@ public class Board implements Iterable<Cell> {
 	private void columnAdd(int columnIndex) {
 		for(Row ¢ : rows)
 			¢.addDeadCell(columnIndex);
-		minColumnIndex = columnIndex < minColumnIndex ? columnIndex : minColumnIndex;
-		maxColumnIndex = columnIndex > maxColumnIndex ? columnIndex : maxColumnIndex;
+		minRowIndex = columnIndex < minRowIndex ? columnIndex : minRowIndex;
+		maxRowIndex = columnIndex > maxRowIndex ? columnIndex : maxRowIndex;
 	}
 	
 	private void rowAddChecker(Map<Position, Integer> livingNeighbors, int rowIndex) {
-		for(Integer ¢ = minColumnIndex; ¢ <= maxColumnIndex + 1; ++¢){
+		for(Integer ¢ = minRowIndex; ¢ <= maxRowIndex + 1; ++¢){
 			Integer neighborNum = livingNeighbors.get(new Position(¢, rowIndex));
 			if (neighborNum != null && neighborNum.equals(3)) {
 				rowAdd(rowIndex);
@@ -248,26 +246,26 @@ public class Board implements Iterable<Cell> {
 	 */
 	private void rowAdd(int rowIndex) {
 		rows.add(new Row(rowIndex));
-		minRowIndex = rowIndex < minRowIndex ? rowIndex : minRowIndex;
-		maxRowIndex = rowIndex > maxRowIndex ? rowIndex : maxRowIndex;
+		minColumnIndex = rowIndex < minColumnIndex ? rowIndex : minColumnIndex;
+		maxColumnIndex = rowIndex > maxColumnIndex ? rowIndex : maxColumnIndex;
 	}
 	
 	private Map<Position,Integer> neighborTally() {
 		Map<Position,Integer> $ = new HashMap<>();
 		if(rowsNum == 0 || rows.get(0).getRowList().isEmpty())
 			return $;
-		for(Integer i = Integer.valueOf(minColumnIndex - 1); i <= Integer.valueOf(maxColumnIndex + 1); ++i)
-			for(Integer j = Integer.valueOf(minRowIndex - 1); j <= Integer.valueOf(maxRowIndex + 1); ++j)
+		for(Integer i = Integer.valueOf(minRowIndex - 1); i <= Integer.valueOf(maxRowIndex + 1); ++i)
+			for(Integer j = Integer.valueOf(minColumnIndex - 1); j <= Integer.valueOf(maxColumnIndex + 1); ++j)
 				$.put(new Position(i, j), neighborTallyAtPosition(i, j));
 		return $;
 	}
 	
 	private Integer neighborTallyAtPosition(Integer i, Integer j) {
 		//Determine which neighboring positions are legitimate
-		Integer minimumRow = i > Integer.valueOf(minColumnIndex) ? i - 1 : Integer.valueOf(minColumnIndex);
-		Integer maximumRow = i < Integer.valueOf(maxColumnIndex) ? i + 1 : Integer.valueOf(maxColumnIndex);
-		Integer minimumColumn = j > Integer.valueOf(minRowIndex) ? j - 1 : Integer.valueOf(minRowIndex);
-		Integer maximumColumn = j < Integer.valueOf(maxRowIndex) ? j + 1 : Integer.valueOf(maxRowIndex);
+		Integer minimumRow = i > Integer.valueOf(minRowIndex) ? i - 1 : Integer.valueOf(minRowIndex);
+		Integer maximumRow = i < Integer.valueOf(maxRowIndex) ? i + 1 : Integer.valueOf(maxRowIndex);
+		Integer minimumColumn = j > Integer.valueOf(minColumnIndex) ? j - 1 : Integer.valueOf(minColumnIndex);
+		Integer maximumColumn = j < Integer.valueOf(maxColumnIndex) ? j + 1 : Integer.valueOf(maxColumnIndex);
 		Integer $ = Integer.valueOf(0);
 		//Go over all legitimate neighbors, and count the living ones.
 		for(Row row : rows){
@@ -354,7 +352,7 @@ public class Board implements Iterable<Cell> {
 		 */
 		Row(int thisRowNum) throws IllegalArgumentException {
 			rowNum = thisRowNum;
-			IntStream.rangeClosed(minColumnIndex, maxColumnIndex).forEach(i -> rowList.add(new DeadCell(new Position(rowNum, i))));
+			IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rowList.add(new DeadCell(new Position(rowNum, i))));
 		}
 		
 	}
