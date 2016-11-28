@@ -412,9 +412,32 @@ public class BoardTest {
 		String result = b.toString();
 		// the dead cell will come back to life, and afterwards no changes
 		String expected = 
-				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n" +
-				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n" +
-				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n";
+				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n" +
+				LIVE + DELIM + LIVE + DELIM + LIVE + DELIM + "\n" +
+				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n";
+		assertEquals(expected, result);
+	}
+	
+	@Test
+	public void testMoveTime01() {
+		// test constructor that gets a valid set of live cells
+		Set<Cell> liveCells = new HashSet<>();
+		liveCells.add(new LiveCell(new Position(0, 0)));
+		liveCells.add(new LiveCell(new Position(1, 0)));
+		liveCells.add(new LiveCell(new Position(2, 0)));
+		Board b = new Board(liveCells);
+		String expected0 = 
+				LIVE + DELIM + "\n" +
+				LIVE + DELIM + "\n" +
+				LIVE + DELIM + "\n";
+		assertEquals(expected0, b.toString());
+		b.moveTime();
+		String result = b.toString();
+		// the dead cell will come back to life, and afterwards no changes
+		String expected = 
+				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n" +
+				LIVE + DELIM + LIVE + DELIM + LIVE + DELIM + "\n" +
+				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n";
 		assertEquals(expected, result);
 	}
 
@@ -468,5 +491,20 @@ public class BoardTest {
 		liveCells.add(new LiveCell(new Position(2, 0)));
 		Board b = new Board(liveCells);
 		Map<Position,Integer> checked = b.neighborTally();
+		assert checked.get(new Position(-1, -1)).equals(1);
+		assert checked.get(new Position(-1, 0)).equals(1);
+		assert checked.get(new Position(-1, 1)).equals(1);
+		assert checked.get(new Position(0, -1)).equals(2);
+		assert checked.get(new Position(0,0)).equals(1);
+		assert checked.get(new Position(0,1)).equals(2);
+		assert checked.get(new Position(1,-1)).equals(3);
+		assert checked.get(new Position(1,0)).equals(2);
+		assert checked.get(new Position(1,1)).equals(3);
+		assert checked.get(new Position(2,-1)).equals(2);
+		assert checked.get(new Position(2,0)).equals(1);
+		assert checked.get(new Position(2,1)).equals(2);
+		assert checked.get(new Position(3,-1)).equals(1);
+		assert checked.get(new Position(3,0)).equals(1);
+		assert checked.get(new Position(3,1)).equals(1);
 	}
 }

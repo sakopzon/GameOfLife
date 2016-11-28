@@ -200,18 +200,18 @@ public class Board implements Iterable<Cell> {
 	 */
 	public void moveTime() {
 		Map<Position,Integer> livingNeighbors = neighborTally();
-		rowAddChecker(livingNeighbors, minColumnIndex - 1);
-		rowAddChecker(livingNeighbors, maxColumnIndex + 1);
-		columnAddChecker(livingNeighbors, minRowIndex - 1);
-		columnAddChecker(livingNeighbors, maxRowIndex + 1);
+		rowAddChecker(livingNeighbors, minRowIndex - 1);
+		rowAddChecker(livingNeighbors, maxRowIndex + 1);
+		columnAddChecker(livingNeighbors, minColumnIndex - 1);
+		columnAddChecker(livingNeighbors, maxColumnIndex + 1);
 		for(Row row : rows)
 			for(Cell cell : row.getRowList())
-				cell.getNextGeneration(livingNeighbors.get(cell.getPosition()));
+				replaceCell(cell.getNextGeneration(livingNeighbors.get(cell.getPosition())));
 	}
 
 	private void columnAddChecker(Map<Position, Integer> livingNeighbors, int columnIndex) {
-		for(Integer ¢ = minColumnIndex; ¢ <= maxColumnIndex + 1; ++¢){
-			Integer neighborNum = livingNeighbors.get(new Position(columnIndex, ¢));
+		for(Integer ¢ = minRowIndex; ¢ <= maxRowIndex + 1; ++¢){
+			Integer neighborNum = livingNeighbors.get(new Position(¢, columnIndex));
 			if (neighborNum != null && neighborNum.equals(3)) {
 				columnAdd(columnIndex);
 				break;
@@ -224,15 +224,15 @@ public class Board implements Iterable<Cell> {
 	 * @param columnIndex
 	 */
 	private void columnAdd(int columnIndex) {
-		for(Row ¢ : rows)
-			¢.addDeadCell(columnIndex);
 		minRowIndex = columnIndex < minRowIndex ? columnIndex : minRowIndex;
 		maxRowIndex = columnIndex > maxRowIndex ? columnIndex : maxRowIndex;
+		for(Row ¢ : rows)
+			¢.addDeadCell(columnIndex);
 	}
 	
 	private void rowAddChecker(Map<Position, Integer> livingNeighbors, int rowIndex) {
-		for(Integer ¢ = minRowIndex; ¢ <= maxRowIndex + 1; ++¢){
-			Integer neighborNum = livingNeighbors.get(new Position(¢, rowIndex));
+		for(Integer ¢ = minColumnIndex; ¢ <= maxColumnIndex + 1; ++¢){
+			Integer neighborNum = livingNeighbors.get(new Position(rowIndex, ¢));
 			if (neighborNum != null && neighborNum.equals(3)) {
 				rowAdd(rowIndex);
 				break;
@@ -245,9 +245,9 @@ public class Board implements Iterable<Cell> {
 	 * @param rowIndex
 	 */
 	private void rowAdd(int rowIndex) {
-		rows.add(new Row(rowIndex));
 		minColumnIndex = rowIndex < minColumnIndex ? rowIndex : minColumnIndex;
 		maxColumnIndex = rowIndex > maxColumnIndex ? rowIndex : maxColumnIndex;
+		rows.add(fixed.rowIndex(rowIndex), new Row(rowIndex));
 	}
 	
 	public Map<Position,Integer> neighborTally() {
@@ -323,7 +323,7 @@ public class Board implements Iterable<Cell> {
 		}
 		
 		private void addDeadCell(int columnIndex) {
-			rowList.add(new DeadCell(new Position(rowNum, columnIndex)));
+			rowList.add(fixed.rowListIndex(columnIndex), new DeadCell(new Position(rowNum, columnIndex)));
 		}
 		
 		private void addCell(String s, Position p) throws IllegalArgumentException {
@@ -367,9 +367,17 @@ public class Board implements Iterable<Cell> {
 		private static int rowListIndex(Cell ¢) {
 			return ¢.yPosition() + Math.abs(minRowIndex);
 		}
+		
+		private static int rowListIndex(Integer ¢) {
+			return ¢ + Math.abs(minRowIndex);
+		}
 
 		public static int rowIndex(Cell ¢) {
 			return ¢.xPosition() + Math.abs(minColumnIndex);
+		}
+		
+		public static int rowIndex(Integer ¢) {
+			return ¢ + Math.abs(minColumnIndex);
 		}
 	}
 }
