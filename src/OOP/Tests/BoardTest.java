@@ -533,11 +533,11 @@ public class BoardTest {
 				LIVE + DELIM + DEAD + DELIM + LIVE + DELIM + "\n" +
 				LIVE + DELIM + DEAD + DELIM + LIVE + DELIM + "\n" +
 				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n";
-		//for(int i = 0; i < 10; ++i){
+		for(int i = 0; i < 10; ++i){
 			b.moveTime();
 			result = b.toString();
 			assertEquals(expected2, result);
-		//}		
+		}		
 	}
 
 	@Test
