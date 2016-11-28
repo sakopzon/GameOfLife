@@ -297,11 +297,11 @@ public class Board implements Iterable<Cell> {
 		return new Iterator<Cell>() {
 			
 			// TODO: the first Cell is (0, 0)? or this:
-			Position current = new Position(minRowIndex, minColumnIndex);
+			Position current = new Position(maxRowIndex, minColumnIndex);
 			
 			@Override
 			public boolean hasNext() {
-				return !getCell(current).getPosition().equals(new Position(maxRowIndex, maxColumnIndex));
+				return !getCell(current).getPosition().equals(new Position(minRowIndex, maxColumnIndex));
 			}
 
 			@Override
@@ -309,7 +309,7 @@ public class Board implements Iterable<Cell> {
 				if(current.y < maxColumnIndex)
 					current.setY(current.y + 1);
 				else {
-					current.setX(current.x + 1);
+					current.setX(current.x - 1);
 					current.setY(minColumnIndex);
 				}
 				return getCell(current);
