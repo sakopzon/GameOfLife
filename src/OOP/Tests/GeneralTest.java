@@ -17,7 +17,7 @@ public class GeneralTest {
 		String input = "";
 		StringBuilder output = new StringBuilder("");
 		for (Row r : (new Board(input)).getBoard())
-			for (Cell ¢ : r.getColumns())
+			for (Cell ¢ : r.getRowList())
 				output.append(¢ instanceof LiveCell ? "*" : " ");
 		assert ((output + "").equals(input)) : "expected \"" + input + "\" but was \"" + output + "\"";
 	}
@@ -27,7 +27,7 @@ public class GeneralTest {
 		String input = "*|";
 		StringBuilder output = new StringBuilder("");
 		for (Row r : (new Board(input)).getBoard())
-			for (Cell ¢ : r.getColumns())
+			for (Cell ¢ : r.getRowList())
 				output.append((¢ instanceof LiveCell ? "*" : " ") + "|");
 		assert ((output + "").equals(input)) : "expected \"" + input + "\" but was \"" + output + "\"";
 	}
@@ -37,7 +37,7 @@ public class GeneralTest {
 		String input = " |";
 		StringBuilder output = new StringBuilder("");
 		for (Row r : (new Board(input)).getBoard())
-			for (Cell ¢ : r.getColumns())
+			for (Cell ¢ : r.getRowList())
 				output.append((¢ instanceof LiveCell ? "*" : " ") + "|");
 		assert ((output + "").equals(input)) : "expected \"" + input + "\" but was \"" + output + "\"";
 	}
@@ -47,7 +47,7 @@ public class GeneralTest {
 		String input = "*|";
 		StringBuilder output = new StringBuilder("");
 		for (Row r : (new Board(input)).getBoard())
-			for (Cell ¢ : r.getColumns())
+			for (Cell ¢ : r.getRowList())
 				output.append((¢ instanceof LiveCell ? "*" : " ") + "|");
 		assert ((output + "").equals(input)) : "expected \"" + input + "\" but was \"" + output + "\"";
 	}
@@ -58,7 +58,7 @@ public class GeneralTest {
 		StringBuilder output = new StringBuilder("");
 		try {
 			for (Row r : (new Board(input)).getBoard())
-				for (Cell ¢ : r.getColumns())
+				for (Cell ¢ : r.getRowList())
 					output.append((¢ instanceof LiveCell ? "*" : " ") + "|");
 			assert false : "should throw IllegalArgumentException";
 		} catch (IllegalArgumentException e) {
@@ -71,7 +71,7 @@ public class GeneralTest {
 		StringBuilder output = new StringBuilder("");
 		try {
 			for (Row r : (new Board(input)).getBoard())
-				for (Cell ¢ : r.getColumns())
+				for (Cell ¢ : r.getRowList())
 					output.append((¢ instanceof LiveCell ? "*" : " ") + "|");
 			assert false : "should throw IllegalArgumentException";
 		} catch (IllegalArgumentException e) {
@@ -84,7 +84,7 @@ public class GeneralTest {
 		StringBuilder output = new StringBuilder("");
 		try {
 			for (Row r : (new Board(input)).getBoard())
-				for (Cell ¢ : r.getColumns())
+				for (Cell ¢ : r.getRowList())
 					output.append((¢ instanceof LiveCell ? "*" : " ") + "|");
 			assert false : "should throw IllegalArgumentException";
 		} catch (IllegalArgumentException e) {
@@ -97,7 +97,7 @@ public class GeneralTest {
 		StringBuilder output = new StringBuilder("");
 		try {
 			for (Row r : (new Board(input)).getBoard())
-				for (Cell ¢ : r.getColumns())
+				for (Cell ¢ : r.getRowList())
 					output.append((¢ instanceof LiveCell ? Cell.LIVE_SIMBOL : Cell.DEAD_SIMBOL) + Board.BOARD_DELIM);
 			assert false : "should throw IllegalArgumentException";
 		} catch (IllegalArgumentException e) {
@@ -110,7 +110,7 @@ public class GeneralTest {
 		StringBuilder output = new StringBuilder("");
 		try {
 			for (Row r : (new Board(input)).getBoard()) {
-				for (Cell ¢ : r.getColumns())
+				for (Cell ¢ : r.getRowList())
 					output.append((¢ instanceof LiveCell ? Cell.LIVE_SIMBOL : Cell.DEAD_SIMBOL) + Board.BOARD_DELIM);
 				output.append(Board.END_OF_LINE);
 			}

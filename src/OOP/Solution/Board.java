@@ -56,7 +56,7 @@ public class Board implements Iterable<Cell> {
 			rows.add(new Row(¢.next(), rowsNum++));
 		// Check rectangle:
 		for(Row ¢ : rows)
-			if(rowsNum != ¢.getColumns().size())
+			if(rowsNum != ¢.getRowList().size())
 				throw new IllegalArgumentException();
 		maxRowIndex = maxColumnIndex = rowsNum - 1;
 	}
@@ -92,8 +92,12 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void initBoardBySize() {
-		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i)));
+		IntStream.rangeClosed(minColumnIndex, maxColumnIndex).forEach(i -> rows.add(new Row(i,minRowIndex,maxRowIndex)));
 	}
+	
+//	private void initBoardBySize() {
+//		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i,minColumnIndex,maxColumnIndex)));
+//	}
 	
 	private void validateInput(Set<Cell> cs) throws ValidationException{
 		for(Cell ¢ : cs)
@@ -143,11 +147,11 @@ public class Board implements Iterable<Cell> {
 	
 	
 	private List<Cell> getRowListOf(Cell ¢) {
-		return rows.get(fixed.rowIndex(¢)).getColumns();
+		return rows.get(fixed.rowIndex(¢)).getRowList();
 	}
 	
 	private void replaceCell(Cell ¢) {
-		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢ instanceof LiveCell ? new DeadCell(¢.getPosition()) : new LiveCell(¢.getPosition()));
+		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢);
 	}
 	
 	/** 
@@ -162,7 +166,7 @@ public class Board implements Iterable<Cell> {
 		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
 			throw new IllegalArgumentException();
 		for(Row row : rows)
-			row.getColumns().replaceAll(
+			row.getRowList().replaceAll(
 					(cell)->{
 						if(cell.getPosition().equals(¢) && cell instanceof LiveCell) 
 							throw new ValidationException(); 
@@ -183,7 +187,7 @@ public class Board implements Iterable<Cell> {
 		if(¢ == null || ¢.y > maxRowIndex || ¢.y < minRowIndex || ¢.x > maxColumnIndex || ¢.x < minColumnIndex)
 			throw new IllegalArgumentException();
 		for(Row row : rows)
-			row.getColumns().replaceAll(
+			row.getRowList().replaceAll(
 					(cell)->{
 						if(cell.getPosition().equals(¢) && cell instanceof DeadCell) 
 							throw new ValidationException(); 
@@ -203,7 +207,7 @@ public class Board implements Iterable<Cell> {
 		columnAddChecker(livingNeighbors, minColumnIndex - 1);
 		columnAddChecker(livingNeighbors, maxColumnIndex + 1);
 		for(Row row : rows)
-			for(Cell cell : row.getColumns())
+			for(Cell cell : row.getRowList())
 				cell.getNextGeneration(livingNeighbors.get(cell.getPosition()));
 	}
 
@@ -250,7 +254,7 @@ public class Board implements Iterable<Cell> {
 	
 	private Map<Position,Integer> neighborTally() {
 		Map<Position,Integer> $ = new HashMap<>();
-		if(rowsNum == 0 || rows.get(0).getColumns().isEmpty())
+		if(rowsNum == 0 || rows.get(0).getRowList().isEmpty())
 			return $;
 		for(Integer i = Integer.valueOf(minColumnIndex - 1); i <= Integer.valueOf(maxColumnIndex + 1); ++i)
 			for(Integer j = Integer.valueOf(minRowIndex - 1); j <= Integer.valueOf(maxRowIndex + 1); ++j)
@@ -269,7 +273,7 @@ public class Board implements Iterable<Cell> {
 		for(Row row : rows){
 			if(row.getRowNum() < minimumRow || row.getRowNum() > maximumRow)
 				continue;
-			for(Cell ¢ : row.getColumns()){
+			for(Cell ¢ : row.getRowList()){
 				if(¢.getPosition().getX() < minimumColumn || ¢.getPosition().getX() > maximumColumn || (¢.getPosition().getX() == i.intValue() && row.getRowNum() == j.intValue()))
 					continue;
 				$ += ¢ instanceof LiveCell ? 1 : 0;
@@ -301,7 +305,7 @@ public class Board implements Iterable<Cell> {
 	public String toString() {
 		StringBuilder out = new StringBuilder("");
 		for (Row r : getBoard()) {
-			for (Cell ¢ : r.getColumns())
+			for (Cell ¢ : r.getRowList())
 				out.append((¢ instanceof LiveCell ? Cell.LIVE_SIMBOL : Cell.DEAD_SIMBOL) + Board.BOARD_DELIM);
 			out.append(Board.END_OF_LINE);
 		}
@@ -312,7 +316,7 @@ public class Board implements Iterable<Cell> {
 		List<Cell> rowList = new ArrayList<>();
 		private int rowNum;
 		
-		public List<Cell> getColumns() {
+		public List<Cell> getRowList() {
 			return rowList;
 		}
 		
@@ -352,6 +356,7 @@ public class Board implements Iterable<Cell> {
 			rowNum = thisRowNum;
 			IntStream.rangeClosed(minColumnIndex, maxColumnIndex).forEach(i -> rowList.add(new DeadCell(new Position(rowNum, i))));
 		}
+		
 	}
 	
 	private enum fixed {
@@ -362,11 +367,11 @@ public class Board implements Iterable<Cell> {
 		 * Not tested yet.
 		 */
 		private static int rowListIndex(Cell ¢) {
-			return ¢.xPosition() + Math.abs(minColumnIndex);
+			return ¢.yPosition() + Math.abs(minColumnIndex);
 		}
 
 		public static int rowIndex(Cell ¢) {
-			return ¢.yPosition() + Math.abs(minRowIndex);
+			return ¢.xPosition() + Math.abs(minRowIndex);
 		}
 	}
 }
