@@ -3,6 +3,7 @@ package OOP.Solution;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Board implements Iterable<Cell> {
 	private static int maxColumnIndex;
 	private static int minRowIndex;
 	private int maxRowIndex;
+	private int generationNum;
 	
 	public List<Row> getBoard() {
 		return rows;
@@ -207,6 +209,7 @@ public class Board implements Iterable<Cell> {
 		for(Row row : rows)
 			for(Cell cell : row.getRowList())
 				replaceCell(cell.getNextGeneration(livingNeighbors.get(cell.getPosition())));
+		++generationNum;
 	}
 
 	private void columnAddChecker(Map<Position, Integer> livingNeighbors, int columnIndex) {
@@ -298,14 +301,21 @@ public class Board implements Iterable<Cell> {
 			
 			// TODO: the first Cell is (0, 0)? or this:
 			Position curr = new Position(maxRowIndex, minColumnIndex);
+			int genNum = generationNum;
+			
+			boolean sameGeneration() {
+				return genNum == generationNum;
+			}
 			
 			@Override
 			public boolean hasNext() {
-				return curr.x >= minRowIndex;
+				return sameGeneration() && curr.x >= minRowIndex;
 			}
 
 			@Override
-			public Cell next() {
+			public Cell next() throws ConcurrentModificationException {
+				if(!sameGeneration())
+					throw new ConcurrentModificationException();
 				Position prev = new Position(curr);
 				if(prev.y < maxColumnIndex)
 					curr.setY(prev.y + 1);
