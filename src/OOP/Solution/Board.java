@@ -224,8 +224,8 @@ public class Board implements Iterable<Cell> {
 	 * @param columnIndex
 	 */
 	private void columnAdd(int columnIndex) {
-		minRowIndex = columnIndex < minRowIndex ? columnIndex : minRowIndex;
-		maxRowIndex = columnIndex > maxRowIndex ? columnIndex : maxRowIndex;
+		minColumnIndex = columnIndex < minColumnIndex ? columnIndex : minColumnIndex;
+		maxColumnIndex = columnIndex > maxColumnIndex ? columnIndex : maxColumnIndex;
 		for(Row ¢ : rows)
 			¢.addDeadCell(columnIndex);
 	}
@@ -245,8 +245,8 @@ public class Board implements Iterable<Cell> {
 	 * @param rowIndex
 	 */
 	private void rowAdd(int rowIndex) {
-		minColumnIndex = rowIndex < minColumnIndex ? rowIndex : minColumnIndex;
-		maxColumnIndex = rowIndex > maxColumnIndex ? rowIndex : maxColumnIndex;
+		minRowIndex = rowIndex < minRowIndex ? rowIndex : minRowIndex;
+		maxRowIndex = rowIndex > maxRowIndex ? rowIndex : maxRowIndex;
 		rows.add(fixed.rowIndex(rowIndex), new Row(rowIndex));
 	}
 	
@@ -395,27 +395,27 @@ public class Board implements Iterable<Cell> {
 		 * Not tested yet.
 		 */
 		private static int rowListIndex(Cell ¢) {
-			return ¢.yPosition() + Math.abs(minRowIndex);
+			return ¢.yPosition() + Math.abs(minColumnIndex);
 		}
 		
 		private static int rowListIndex(Integer ¢) {
-			return ¢ + Math.abs(minRowIndex);
-		}
-
-		public static int rowIndex(Cell ¢) {
-			return ¢.xPosition() + Math.abs(minColumnIndex);
-		}
-		
-		public static int rowIndex(Integer ¢) {
 			return ¢ + Math.abs(minColumnIndex);
 		}
 
+		public static int rowIndex(Cell ¢) {
+			return ¢.xPosition() + Math.abs(minRowIndex);
+		}
+		
+		public static int rowIndex(Integer ¢) {
+			return ¢ + Math.abs(minRowIndex);
+		}
+
 		private static int rowListIndex(Position ¢) {
-			return ¢.y + Math.abs(minRowIndex);
+			return ¢.y + Math.abs(minColumnIndex);
 		}
 
 		public static int rowIndex(Position ¢) {
-			return ¢.x + Math.abs(minColumnIndex);
+			return ¢.x + Math.abs(minRowIndex);
 		}
 	}
 }

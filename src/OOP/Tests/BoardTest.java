@@ -424,9 +424,54 @@ public class BoardTest {
 		Set<Cell> liveCells = new HashSet<>();
 		liveCells.add(new LiveCell(new Position(0, 0)));
 		liveCells.add(new LiveCell(new Position(1, 0)));
-		liveCells.add(new LiveCell(new Position(2, 0)));
+		liveCells.add(new LiveCell(new Position(0, 1)));
 		Board b = new Board(liveCells);
 		String expected0 = 
+				LIVE + DELIM + LIVE + DELIM + "\n" +
+				LIVE + DELIM + DEAD + DELIM + "\n";
+		assertEquals(expected0, b.toString());
+		for(int i = 0; i < 10; ++i)
+			b.moveTime();
+		String result = b.toString();
+		// the dead cell will come back to life, and afterwards no changes
+		String expected = 
+				LIVE + DELIM + LIVE + DELIM + "\n" +
+				LIVE + DELIM + LIVE + DELIM + "\n";
+		assertEquals(expected, result);
+	}
+	
+	@Test
+	public void testMoveTime02() {
+		// test constructor that gets a valid set of live cells
+		Set<Cell> liveCells = new HashSet<>();
+		liveCells.add(new LiveCell(new Position(0, 0)));
+		liveCells.add(new LiveCell(new Position(1, 0)));
+		Board b = new Board(liveCells);
+		String expected0 = 
+				LIVE + DELIM + "\n" +
+				LIVE + DELIM + "\n";
+		assertEquals(expected0, b.toString());
+		for(int i = 0; i < 10; ++i)
+			b.moveTime();
+		String result = b.toString();
+		// the dead cell will come back to life, and afterwards no changes
+		String expected = 
+				DEAD + DELIM + "\n" +
+				DEAD + DELIM + "\n";
+		assertEquals(expected, result);
+	}
+	
+	@Test
+	public void testMoveTime03() {
+		// test constructor that gets a valid set of live cells
+		Set<Cell> liveCells = new HashSet<>();
+		liveCells.add(new LiveCell(new Position(0, 0)));
+		liveCells.add(new LiveCell(new Position(1, 0)));
+		liveCells.add(new LiveCell(new Position(2, 0)));
+		liveCells.add(new LiveCell(new Position(3, 0)));
+		Board b = new Board(liveCells);
+		String expected0 = 
+				LIVE + DELIM + "\n" +
 				LIVE + DELIM + "\n" +
 				LIVE + DELIM + "\n" +
 				LIVE + DELIM + "\n";
@@ -434,11 +479,22 @@ public class BoardTest {
 		b.moveTime();
 		String result = b.toString();
 		// the dead cell will come back to life, and afterwards no changes
-		String expected = 
+		String expected1 =
 				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n" +
 				LIVE + DELIM + LIVE + DELIM + LIVE + DELIM + "\n" +
+				LIVE + DELIM + LIVE + DELIM + LIVE + DELIM + "\n" +
 				DEAD + DELIM + DEAD + DELIM + DEAD + DELIM + "\n";
-		assertEquals(expected, result);
+		assertEquals(expected1, result);
+		String expected2 = 
+				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n" +
+				LIVE + DELIM + DEAD + DELIM + LIVE + DELIM + "\n" +
+				LIVE + DELIM + DEAD + DELIM + LIVE + DELIM + "\n" +
+				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n";
+		//for(int i = 0; i < 10; ++i){
+			b.moveTime();
+			result = b.toString();
+			assertEquals(expected2, result);
+		//}		
 	}
 
 	@Test
