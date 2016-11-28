@@ -147,7 +147,7 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	private void replaceCell(Cell ¢) {
-		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢ instanceof LiveCell ? new DeadCell(¢.getPosition()) : new LiveCell(¢.getPosition()));
+		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢);
 	}
 	
 	/** 
