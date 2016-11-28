@@ -300,7 +300,7 @@ public class Board implements Iterable<Cell> {
 		return new Iterator<Cell>() {
 			
 			// TODO: the first Cell is (0, 0)? or this:
-			Position curr = new Position(maxRowIndex, minColumnIndex);
+			Position curr = new Position(minRowIndex, minColumnIndex);
 			int genNum = generationNum;
 			
 			boolean sameGeneration() {
@@ -309,7 +309,7 @@ public class Board implements Iterable<Cell> {
 			
 			@Override
 			public boolean hasNext() {
-				return sameGeneration() && curr.x >= minRowIndex;
+				return sameGeneration() && curr.y <= maxColumnIndex;
 			}
 
 			@Override
@@ -317,11 +317,11 @@ public class Board implements Iterable<Cell> {
 				if(!sameGeneration())
 					throw new ConcurrentModificationException();
 				Position prev = new Position(curr);
-				if(prev.y < maxColumnIndex)
-					curr.setY(prev.y + 1);
+				if(prev.x < maxRowIndex)
+					curr.setX(prev.x + 1);
 				else {
-					curr.setX(prev.x - 1);
-					curr.setY(minColumnIndex);
+					curr.setY(prev.y + 1);
+					curr.setX(minRowIndex);
 				}
 				return getCell(prev);
 			}
