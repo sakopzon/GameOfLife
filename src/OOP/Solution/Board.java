@@ -252,7 +252,7 @@ public class Board implements Iterable<Cell> {
 		maxColumnIndex = rowIndex > maxColumnIndex ? rowIndex : maxColumnIndex;
 	}
 	
-	private Map<Position,Integer> neighborTally() {
+	public Map<Position,Integer> neighborTally() {
 		Map<Position,Integer> $ = new HashMap<>();
 		if(rowsNum == 0 || rows.get(0).getRowList().isEmpty())
 			return $;
@@ -274,7 +274,7 @@ public class Board implements Iterable<Cell> {
 			if(row.getRowNum() < minimumRow || row.getRowNum() > maximumRow)
 				continue;
 			for(Cell ¢ : row.getRowList()){
-				if(¢.getPosition().getX() < minimumColumn || ¢.getPosition().getX() > maximumColumn || (¢.getPosition().getX() == i.intValue() && row.getRowNum() == j.intValue()))
+				if(¢.getPosition().getY() < minimumColumn || ¢.getPosition().getY() > maximumColumn || (¢.getPosition().getX() == i.intValue() && ¢.getPosition().getY() == j.intValue()))
 					continue;
 				$ += ¢ instanceof LiveCell ? 1 : 0;
 			}

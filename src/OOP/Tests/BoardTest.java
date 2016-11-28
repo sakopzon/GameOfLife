@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -149,5 +150,14 @@ public class BoardTest {
 				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n" +
 				DEAD + DELIM + LIVE + DELIM + DEAD + DELIM + "\n";
 		assertEquals(expected, result);
+	}
+	
+	@Test public void testNeighborTally00() {
+		Set<Cell> liveCells = new HashSet<>();
+		liveCells.add(new LiveCell(new Position(0, 0)));
+		liveCells.add(new LiveCell(new Position(1, 0)));
+		liveCells.add(new LiveCell(new Position(2, 0)));
+		Board b = new Board(liveCells);
+		Map<Position,Integer> checked = b.neighborTally();
 	}
 }
