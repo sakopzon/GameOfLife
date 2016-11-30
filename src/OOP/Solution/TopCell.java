@@ -4,6 +4,10 @@ public abstract class TopCell implements Cell{
 	
 	protected final Position position = new Position(0, 0);
 	
+	public boolean equals(Object ¢) {
+		return this.getClass().equals(¢.getClass()) && this.getPosition().equals(((TopCell)¢).getPosition());
+	}
+	
 	// Pay attention, position is final, use it's API to set values
 	@Override
 	public Position getPosition() {

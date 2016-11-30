@@ -388,6 +388,7 @@ public class BoardTest {
 				DEAD + DELIM + LIVE + DELIM + "\n";
 		Board b = new Board(image);
 		Iterator<Cell> i = b.iterator();
+		// TODO: Implement Cell equals().
 		assertEquals(new LiveCell(new Position(0, 0)), i.next());
 		assertEquals(new DeadCell(new Position(1, 0)), i.next());
 		assertEquals(new DeadCell(new Position(0, 1)), i.next());
