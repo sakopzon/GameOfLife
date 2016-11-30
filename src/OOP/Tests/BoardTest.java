@@ -389,6 +389,9 @@ public class BoardTest {
 		Board b = new Board(image);
 		Iterator<Cell> i = b.iterator();
 		// TODO: Implement Cell equals().
+		LiveCell ¢ = new LiveCell(new Position(0,0));
+		LiveCell $ = new LiveCell(new Position(0,0));
+		assert($.equals(¢));
 		assertEquals(new LiveCell(new Position(0, 0)), i.next());
 		assertEquals(new DeadCell(new Position(1, 0)), i.next());
 		assertEquals(new DeadCell(new Position(0, 1)), i.next());

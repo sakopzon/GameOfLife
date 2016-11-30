@@ -90,7 +90,7 @@ public class Board implements Iterable<Cell> {
 		revive(new Position(1,1));
 	}
 	
-	private void initBoardBySize() {
+	private void initBoardOfDeadCellsOnly() {
 		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i,minColumnIndex,maxColumnIndex)));
 	}
 	
@@ -98,13 +98,12 @@ public class Board implements Iterable<Cell> {
 //		IntStream.rangeClosed(minRowIndex, maxRowIndex).forEach(i -> rows.add(new Row(i,minColumnIndex,maxColumnIndex)));
 //	}
 	
-	private void validateInput(Set<Cell> cs) throws ValidationException{
+	private void validateInputIsLiveCellsOnly(Set<Cell> cs) throws ValidationException{
 		for(Cell ¢ : cs)
-			if(¢ instanceof DeadCell)
-				throw new ValidationException();
+			Validate.that(¢ instanceof LiveCell, "LAKOOKARACHA");
 	}
 	
-	private void initBoardSize(Set<Cell> cs) {
+	private void initBoardGlobalIndexes(Set<Cell> cs) {
 		minRowIndex = cs.stream().min((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
 		minColumnIndex = cs.stream().min((a, b) -> a.yPosition() - b.yPosition()).get().yPosition();
 		maxRowIndex = cs.stream().max((a, b) -> a.xPosition() - b.xPosition()).get().xPosition();
@@ -124,24 +123,25 @@ public class Board implements Iterable<Cell> {
 		return new Wrapper<Cell>(rows.get(¢.y).rowList.get(¢.x));
 	}
 
-	private void putCellsOnBoard(Set<Cell> cs) {
+	private void putLiveCellsOnBoard(Set<Cell> cs) {
 		for(Cell ¢ : cs)
-			replaceCell(¢);
+			if(¢ instanceof LiveCell)
+				putCell(¢);
 	}
 	
 	/** 
 	 * Create a new board using a given set of cells. The list is expected to contain only live cells.
 	 * This should be validated. 
-	 * TODO: understand: If validations are turned off, dead cells should be ignored.
+	 * If validations are turned off, dead cells should be ignored.
 	 * @param cells
 	 * @throws ValidationException in case a dead cell is given.
 	 * [[SuppressWarningsSpartan]]
 	 */
 	public Board(Set<Cell> cs) throws ValidationException{
-		validateInput(cs);
-		initBoardSize(cs);
-		initBoardBySize();
-		putCellsOnBoard(cs);
+		validateInputIsLiveCellsOnly(cs);
+		initBoardGlobalIndexes(cs);
+		initBoardOfDeadCellsOnly();
+		putLiveCellsOnBoard(cs);
 	}
 	
 	
@@ -150,7 +150,7 @@ public class Board implements Iterable<Cell> {
 	}
 	
 	// TODO: Maybe should be renamed to putCell()?
-	private void replaceCell(Cell ¢) {
+	private void putCell(Cell ¢) {
 		getRowListOf(¢).set(fixed.rowListIndex(¢), ¢);
 	}
 	
@@ -168,8 +168,8 @@ public class Board implements Iterable<Cell> {
 		for(Row row : rows)
 			row.getRowList().replaceAll(
 					(cell)->{
-						if(cell.getPosition().equals(¢) && cell instanceof LiveCell) 
-							throw new ValidationException(); 
+						if(cell.getPosition().equals(¢)) 
+							Validate.that(cell instanceof DeadCell, "KARRRRRAMBULA revive"); 
 						return cell.getPosition().equals(¢) ? new LiveCell(¢) : cell;
 						});
 	}
@@ -189,8 +189,8 @@ public class Board implements Iterable<Cell> {
 		for(Row row : rows)
 			row.getRowList().replaceAll(
 					(cell)->{
-						if(cell.getPosition().equals(¢) && cell instanceof DeadCell) 
-							throw new ValidationException(); 
+						if(cell.getPosition().equals(¢)) 
+							Validate.that(cell instanceof LiveCell, "KARRRRRAMBULA strike");
 						return cell.getPosition().equals(¢) ? new DeadCell(¢) : cell;
 						});
 		
@@ -208,7 +208,7 @@ public class Board implements Iterable<Cell> {
 		columnAddChecker(livingNeighbors, maxColumnIndex + 1);
 		for(Row row : rows)
 			for(Cell cell : row.getRowList())
-				replaceCell(cell.getNextGeneration(livingNeighbors.get(cell.getPosition())));
+				putCell(cell.getNextGeneration(livingNeighbors.get(cell.getPosition())));
 		++generationNum;
 	}
 
