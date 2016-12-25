@@ -38,6 +38,8 @@ public abstract class TopCell implements Cell{
 	
 	@Override
 	public void setPosition(Position ¢) {
+		if(¢ == null)
+			return;
 		position.set(¢);
 	}
 }

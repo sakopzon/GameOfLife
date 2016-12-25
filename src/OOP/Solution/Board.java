@@ -183,7 +183,8 @@ public class Board implements Iterable<Cell> {
 	 * 		   ValidationException in case the cell is already dead and validations are on.
 	 * [[SuppressWarningsSpartan]]
 	 */
-	public void strike(Position ¢) {
+	public void strike(Position in) {
+		Position ¢ = new Position(in.y, in.x);
 		if(¢ == null || ¢.y > maxColumnIndex || ¢.y < minColumnIndex || ¢.x > maxRowIndex || ¢.x < minRowIndex)
 			throw new IllegalArgumentException();
 		for(Row row : rows)

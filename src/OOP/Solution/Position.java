@@ -8,6 +8,8 @@ public class Position {
 	int y;
 	
 	public void set(Position ¢) {
+		if(¢ == null)
+			x = y = 0;
 		x = ¢.x;
 		y = ¢.y;
 	}
@@ -39,6 +41,8 @@ public class Position {
 	}
 	
 	public Position(Position ¢) {
+		if(¢ == null)
+			x = y = 0;
 		x = ¢.x;
 		y = ¢.y;
 	}
